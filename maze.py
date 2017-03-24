@@ -27,13 +27,13 @@ class Cell():
     def getWalls(self, scale, x, y):
         walls = []
         if self.walls[0]:
-            walls.append(((scale*self.x     + x-1, scale*self.y     + y), (scale*(self.x+1) + x+2, scale*self.y + y)))
+            walls.append(((scale*self.x     + x, scale*self.y     + y), (scale*(self.x+1) + x, scale*self.y + y)))
         if self.walls[1]:
-            walls.append(((scale*(self.x+1) + x, scale*self.y     + y-1), (scale*(self.x+1) + x, scale*(self.y+1) + y+2)))
+            walls.append(((scale*(self.x+1) + x, scale*self.y     + y), (scale*(self.x+1) + x, scale*(self.y+1) + y + 1)))
         if self.walls[2]:
-            walls.append(((scale*self.x     + x-1, scale*(self.y+1) + y), (scale*(self.x+1) + x+2, scale*(self.y+1) + y)))
+            walls.append(((scale*self.x     + x, scale*(self.y+1) + y), (scale*(self.x+1) + x + 1, scale*(self.y+1) + y)))
         if self.walls[3]:
-            walls.append(((scale*self.x     + x, scale*self.y     + y-1), (scale*self.x     + x, scale*(self.y+1) + y+2)))
+            walls.append(((scale*self.x     + x, scale*self.y     + y), (scale*self.x     + x, scale*(self.y+1) + y)))
         return walls
 
     def unseenNeighbour(self):

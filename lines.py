@@ -28,7 +28,7 @@ def midpoint(p1, p2):
 def point_on_line(p, line):
     x1, x2 = sorted([line[0][0], line[1][0]])
     y1, y2 = sorted([line[0][1], line[1][1]])
-    return x1 <= p[0] <= x2 and y1 <= p[1] <= y2
+    return x1-0.01 <= p[0] <= x2+0.01 and y1-0.01 <= p[1] <= y2+0.01
 
 def intersection(line1, line2):
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])

@@ -5,33 +5,35 @@ from math import *
 
 import threading
 
+speed = 1
+target_frames = 120
+
 maze = maze.Maze(16,16)
 maze.generate()
 
 lines = []
-for l in maze.getWalls(-300,-300):
+for l in maze.getWalls(10,10):
     lines.append(l)
 
-robot = robot.setup(-140, -140, lines)
+robot = robot.setup(200, 200, lines)
 
 def redraw():
     draw.clear()
-    robot.draw()
+
+    for i in range(speed):
+        robot.update()
 
     for l in lines:
         draw.line(*l)
 
-    draw.ontimer(redraw, 1000//60)
-
-def update():
-    robot.update()
-    draw.ontimer(update, 100)
-
-update()
-redraw()
+    robot.draw()
+    draw.camera = robot.getPos()
+    draw.ontimer(redraw, 1000//target_frames)
 
 def other():
     import ev_code
+
+redraw()
 
 my_thread = threading.Thread(target=other)
 my_thread.daemon = True

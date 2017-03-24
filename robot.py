@@ -14,8 +14,6 @@ OUTPUT_B = None
 OUTPUT_C = None
 OUTPUT_D = (1,0)
 
-def avg_point_force(*forces):
-
 
 #Motors
 class LargeMotor():
@@ -46,9 +44,8 @@ class LargeMotor():
 
         return x, y
 
-    def getPointForce(self):
-        return self.getPos + (cos(robot.angle) * self.speed, sin(robot.angle) * self.speed, self.speed)
-
+    def getRelativePos(self):
+        return sub(robot.pos, self.pos)
 
     def getSpeed(self, duty_cycle):
         duty_cycle = max(0, min(100, duty_cycle))
@@ -140,6 +137,8 @@ class LineSensor(Sensor):
                 poi = intersection(line, l)
                 if poi:
                     points.append(poi)
+        #if not points:
+        #    print('problem')
         return sorted(points, key = lambda x: distance(self.pos, x))[0] if points else False
 
 
@@ -173,8 +172,13 @@ class UltrasonicSensor(LineSensor):
             return self.length
 
 class GyroSensor(Sensor):
+    def __init__(self, pos=(0,0,0)):
+        super().__init__(pos)
+        self.prevAng = 0
     def value(self):
-        return robot.angle
+        #a = robot.angle - self.prevAng
+        #self.prevAng = robot.angle
+        return robot.angle % (2 * pi)
 
 
 class Button():
@@ -205,7 +209,7 @@ class Robot():
         self.walls = walls
 
         self.sensors = []
-        self.motors = []
+        self.motors = {"left": None, "right": None}
 
         self.angle = 0
         self.size = 8
@@ -223,20 +227,40 @@ class Robot():
         self.angle += a
 
     def update(self):
-        # calculate vector of average force
-        forces = []
-        for motor in motors:
-            vectors.append(motor.getPointForce())
+        if self.motors["left"] and self.motors["right"]:
+            left = self.motors["left"]
+            right = self.motors["right"]
 
-        a = avg_point_force(*forces)
-        # apply vector force
+            if left.speed != right.speed:
+                radius = (left.speed + right.speed)/(right.speed - left.speed)
+
+                vector_to_wheel = sub(left.pos, self.pos)
+                vector_to_center = mul(unit_vector(vector_to_wheel), radius*self.size)
+
+                cx, cy = add(vector_to_center, self.pos)
+
+                theta = (-1 if left.speed > right.speed else 1)*(abs(left.speed) + abs(right.speed))/16000 * pi
+
+                self.turn(theta)
+                self.x = cos(theta) * (robot.x - cx) - sin(theta) * (robot.y - cy) + cx
+                self.y = sin(theta) * (robot.x - cx) + cos(theta) * (robot.y - cy) + cy
+            else:
+                self.move(left.speed/250)
+            left.run(100)
+            right.run(100)
 
 
     def addMotor(self, motor):
-        self.motors.append(motor)
+        if self.motors["left"]: self.motors["right"] = motor
+        else: self.motors["left"] = motor
 
     def addSensor(self, sensor):
         self.sensors.append(sensor)
+
+    def getPos(self):
+        return (self.x, self.y)
+
+    pos = property(getPos, None)
 
 def setup(x, y, walls):
     global robot
@@ -244,7 +268,7 @@ def setup(x, y, walls):
     return robot
 
 
-    # def turn(self, left, right, radius):
+    # def turn(self, left, right, radius):`
     #     mid = midpoint(left.pos, right.pos)
     #     vector = mul(unit_vector(sub(right.pos, mid)), radius)
     #     point = add(mid, vector)
@@ -297,3 +321,37 @@ def setup(x, y, walls):
     #         self.move(movement/rotation)
     #     else:
     #         self.move(movement)
+
+    # def avg_point_force(*forces):
+    #     magnitudes = 0
+    #     avgpos = (0,0)
+    #     avgforce = (0,0)
+    #     for force in forces:
+    #         avgpos = add(avgpos, mul(force["pos"], force["magnitude"]))
+    #         avgforce = add(avgforce, force["direction"])
+    #         magnitudes += force["magnitude"]
+    #
+    #     if magnitudes: pos = mul(avgpos, 1/(magnitudes * len(forces)))
+    #     else: pos = (0,0)
+    #     direction = mul(avgforce, 1/len(forces))
+    #     magnitude = sqrt(direction[0]**2 + direction[1]**2)
+    #     return {"pos": pos, "direction": direction, "magnitude": magnitude}
+
+    # def update(self):
+    #     # calculate vector of average force
+    #     forces = []
+    #     for motor in self.motors:
+    #         forces.append(motor.getPointForce())
+    #         motor.run(100)
+    #     print(forces)
+    #     if forces:
+    #         final_force = avg_point_force(*forces)
+    #         print(final_force)
+    #         ratio = 250
+    #         # apply vector force
+    #         self.x += final_force["magnitude"] * cos(atan2(*final_force["direction"][::-1]))/ratio
+    #         self.y += final_force["magnitude"] * sin(atan2(*final_force["direction"][::-1]))/ratio
+    #
+    #         torque = distance((0,0), final_force["pos"]) * final_force["magnitude"]/ratio
+    #         print(torque)
+    #         self.turn(torque)

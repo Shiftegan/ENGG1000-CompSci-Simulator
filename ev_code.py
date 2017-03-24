@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from time import sleep
+import random
 from math import *
 import sys, os
 
@@ -40,7 +41,7 @@ def backup():
 
 def turn(dir):
     rightMotor.run_timed(speed_sp=dir*-750, time_sp=1250)
-    leftMotor.run_timed(speed_sp=dir*0,   time_sp=1250)
+    leftMotor.run_timed(speed_sp=dir*750,   time_sp=1250)
 
     while any(m.state for m in (leftMotor, rightMotor)):
         sleep(0.1)
@@ -57,28 +58,29 @@ while not btn.any():
         turn(1)
         start()
 
-    direction = gs.value()
+    direction = gs.value() + random.random() * 0.4 - 0.2
 
-    if direction > 5:
-        rightMotor.duty_cycle_sp = 5
-    elif direction < 5:
-        leftMotor.duty_cycle_sp = 5
+    if direction > 2 + 0.1:
+        rightMotor.duty_cycle_sp = 55
+        leftMotor.duty_cycle_sp = 25
+    elif direction < 2 -0.1:
+        rightMotor.duty_cycle_sp = 25
+        leftMotor.duty_cycle_sp = 55
     else:
         rightMotor.duty_cycle_sp = 75
         leftMotor.duty_cycle_sp = 75
 
-    distance = us.value();
+    #distance = us.value();
+    #if distance > 30:
+    #    dc = 75
+    #else:
+    #    dc = 30
 
-    if distance > 300:
-        dc = 75
-    else:
-        dc = 30
-
-    for m in (leftMotor, rightMotor):
-        m.duty_cycle_sp = dc
+    #for m in (leftMotor, rightMotor):
+    #    m.duty_cycle_sp = dc
 
     #print(rightMotor.position, leftMotor.position)
-    sleep(0.01)
+    sleep(0.001)
 
-    # rightMotor.stop()
-    # leftMotor.stop()
+    rightMotor.stop()
+    leftMotor.stop()
