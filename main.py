@@ -8,14 +8,14 @@ import threading
 speed = 1
 target_frames = 120
 
-maze = maze.Maze(16,16)
-maze.generate()
+# maze = maze.Maze(16,16)
+# maze.generate()
 
-lines = []
-for l in maze.getWalls(10,10):
-    lines.append(l)
+lines = [((0,0), (0,40)), ((0,0), (40,0)), ((40,0), (40,40)), ((0,40), (40,40))]
+# for l in maze.getWalls(10,10):
+#     lines.append(l)
 
-robot = robot.setup(200, 200, lines)
+robot = robot.setup(100,100, lines)
 
 def redraw():
     draw.clear()

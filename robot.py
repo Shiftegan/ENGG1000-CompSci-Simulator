@@ -67,6 +67,7 @@ class LargeMotor():
 
     def stop(self, stop_command = "brake"):
         self.run_time = 0
+        self.speed = 0
         self.state = False
 
     def run(self, time):
@@ -145,7 +146,7 @@ class LineSensor(Sensor):
 class TouchSensor(LineSensor):
     def __init__(self, pos=(0,0,0)):
         super().__init__(pos)
-        self.length = 5
+        self.length = 10
 
     def draw(self):
         draw.line(*self.getLine())
