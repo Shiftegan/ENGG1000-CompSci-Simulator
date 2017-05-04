@@ -6,14 +6,14 @@ from math import *
 import threading
 
 speed = 1
-target_frames = 120
+target_frames = 30
 
-# maze = maze.Maze(16,16)
-# maze.generate()
-
-lines = [((0,0), (0,40)), ((0,0), (40,0)), ((40,0), (40,40)), ((0,40), (40,40))]
-# for l in maze.getWalls(10,10):
-#     lines.append(l)
+maze = maze.Maze(5,5)
+maze.generate()
+lines = []
+# lines = [((0,0), (0,40)), ((0,0), (40,0)), ((40,0), (40,40)), ((0,40), (40,40))]
+for l in maze.getWalls(10,10):
+    lines.append(l)
 
 robot = robot.setup(100,100, lines)
 

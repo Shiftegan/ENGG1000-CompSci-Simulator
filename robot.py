@@ -48,7 +48,7 @@ class LargeMotor():
         return sub(robot.pos, self.pos)
 
     def getSpeed(self, duty_cycle):
-        duty_cycle = max(0, min(100, duty_cycle))
+        duty_cycle = max(-100, min(100, duty_cycle))
         self.speed = 10 * duty_cycle
         return self.speed
 
@@ -157,6 +157,9 @@ class TouchSensor(LineSensor):
         else:   return False
 
 class UltrasonicSensor(LineSensor):
+    def __init__(self, pos=(0,0,pi/2)):
+        super().__init__(pos)
+
     def draw(self):
         poi = self.poi()
         if poi:
@@ -177,9 +180,9 @@ class GyroSensor(Sensor):
         super().__init__(pos)
         self.prevAng = 0
     def value(self):
-        #a = robot.angle - self.prevAng
-        #self.prevAng = robot.angle
-        return robot.angle % (2 * pi)
+        a = robot.angle - self.prevAng
+        self.prevAng = robot.angle
+        return a
 
 
 class Button():
@@ -231,7 +234,6 @@ class Robot():
         if self.motors["left"] and self.motors["right"]:
             left = self.motors["left"]
             right = self.motors["right"]
-
             if left.speed != right.speed:
                 radius = (left.speed + right.speed)/(right.speed - left.speed)
 
