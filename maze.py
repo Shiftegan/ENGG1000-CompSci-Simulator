@@ -77,7 +77,7 @@ class Maze():
         self.cells = []
         self.width = width
         self.height = height
-        self.scale = 40
+        self.scale = 60
         self.populate()
         self.setup()
 

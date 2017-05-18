@@ -6,7 +6,7 @@ import draw
 #Globals
 INPUT_1 = (1,1,0)
 INPUT_2 = (0,0,0)
-INPUT_3 = (0,0,0)
+INPUT_3 = (0,0,pi/2)
 INPUT_4 = (-1,1,0)
 
 OUTPUT_A = (-1,0)
@@ -241,8 +241,8 @@ class Robot():
                 vector_to_center = mul(unit_vector(vector_to_wheel), radius*self.size)
 
                 cx, cy = add(vector_to_center, self.pos)
-
-                theta = (-1 if left.speed > right.speed else 1)*(abs(left.speed) + abs(right.speed))/16000 * pi
+                radius = max(1, radius)
+                theta = (-1 if left.speed > right.speed else 1)*(abs(left.speed) + abs(right.speed))/(2 * pi * radius * 2000)
 
                 self.turn(theta)
                 self.x = cos(theta) * (robot.x - cx) - sin(theta) * (robot.y - cy) + cx
