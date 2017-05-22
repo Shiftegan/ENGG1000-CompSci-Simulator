@@ -8,11 +8,13 @@ class VeryCloseFront(NameError):
     pass
 
 class Action_Thread(threading.Thread):
-    def __init__(self):
-        super.__init__()
+    def __init__(self, right, left):
+        super().__init__()
         self.actions = []
+        self.right = right
+        self.left = left
 
-    def _get_current_action(self):
+    def current(self):
         return False if not self.actions else self.actions[0]
 
     def check_sensors(self):
@@ -28,8 +30,9 @@ class Action_Thread(threading.Thread):
     def execute_action(self, action):
         elapsed = 0
         name, rspeed, lspeed, time = action
-        rightMotor.run_direct(duty_cycle_sp = rspeed)
-        leftMotor.run_direct(duty_cycle_sp = lspeed)
+        global rightMotor, leftMotor
+        self.right.run_direct(duty_cycle_sp = -rspeed)
+        self.left.run_direct(duty_cycle_sp = -lspeed)
         while elapsed < time:
             self.check_sensors()
             sleep(0.1)
@@ -43,5 +46,3 @@ class Action_Thread(threading.Thread):
                 pass
             except VeryCloseFront:
                 pass
-
-    currrent = property(_get_current_action, None)
